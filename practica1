@@ -1,0 +1,46 @@
+require(foreign)
+coe216<- read.dbf("C:\\Users\\SALA-D4\\Desktop\\coe2t116.dbf")
+ls(coe216) #lista de las variables de la base de datos (las genera de orden alfabetico)
+
+#extraer 
+coe216$P6D<-as.numeric(as.character(coe216$P6D)) #convertir primero en caracter y luego en numerica
+coesins<-subset(coe216,coe216$P6D==1| coe216$P6D==2 |coe216$P6D==3| coe216$P6D==4 |coe216$P6D==5) #subconjunto 
+#serie, filtro que queremos
+#si lo dejamos en caracter al poner == no lo reconoceria
+#o tambien se puede hacer otra variable en vez de remplazar 
+
+coe216$sinseg<- ifelse(coe216$P6D>=1 & coe216$P6D<=5,1, ifelse(coe216$P6D>=6 & coe216$P6D<=9,2,0)) #condicionante
+#si coe216 va de 1 a 5 llamale 1 de 6 a 9 llamale 2, el resto llamale 0 
+
+table(coe216$sinseg)
+#nos da las cantidad que tiene 1 y cuantos 2
+#RECONSTRUCCION DE VARIABLE
+
+
+#############EJERCICIO
+#HACER LA VARIABLE DE DESOCUPADOS 
+## != DIFERENTE
+
+coe116<- read.dbf("C:\\Users\\SALA-D4\\Desktop\\coe1t116.dbf")
+ls(coe116) 
+
+coe116$P1C<-as.numeric(as.character(coe116$P1C)) 
+coe116$P1B<-as.numeric(as.character(coe116$P1B))
+coe116$P2_1<-as.numeric(as.character(coe116$P2_1))
+coe116$P2_2<-as.numeric(as.character(coe116$P2_2))
+coe116$P2_3<-as.numeric(as.character(coe116$P2_3))
+coe116$P2B<-as.numeric(as.character(coe116$P2B))
+coe116$P2C<-as.numeric(as.character(coe116$P2C))
+coe116$P1D<-as.numeric(as.character(coe116$P1D))
+
+coedes<-subset(coe116,coe116$P1C==11)  
+
+coe116$sinseg<- ifelse(coe116$P1C==11,1, 
+                       ifelse((coe116$P1B==2) & (coe116$P2_1==1 | coe116$P2_2==2 | coe116$P2_3==3) & (coe116$P2B==1) & (coe116$P2C!=2 | coe116$P2C!=9),2,
+                              ifelse((coe116$P1D==2 | coe116$P1D==9) & (coe116$P2_1==1 | coe116$P2_2==2 | coe116$P2_3==3) & (coe116$P2B==1) & (coe116$P2C!=2 & coe116$P2C!=9),3,0)))
+#si coe216 va de 1 a 5 llamale 1 de 6 a 9 llamale 2, el resto llamale 0 
+
+table(coe116$sinseg)
+install.packages("questionr")
+require(questionr)
+wtd.table(coe116$sinseg,weights=)
