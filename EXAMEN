@@ -1,0 +1,56 @@
+#AJUSTAR 4 MODELOS DE SUAVIZADO EXPONENCIAL SIMPLE (ALPHA = .2, .4, .6, .8)
+#GRAFICAR EN UNA SOLA GRAFICA
+#CON LA GRAFICA DECIDIR CUAL DE LOS 4 ES EL MEJOR AJUSTE 
+#APLICAR LA EVALUACION DE LOS AJUSTES Y UTILIZAR LAS MEDIDAS MAE Y RMSE EXTRAYENDOLAS DE TAL FORMA QUE 
+#CREEN UN VECTOR QUE COMPARE ESTAS MEDIDAS Y ESE VECTOR INDIQUE QUE ALPHA ES LA MEJOR
+#IDENTIFICAR TENDENCIA, ESTACIONARIEDAD Y CICLOS EN LA SERIE DE TIEMPO E INTERPRETAR ESTOS COMPONENTES.
+
+ICA<- read.csv(file.choose())
+icast<- ts(ICA,frequency = 252, start = 2016)
+icast
+
+require(forecast)
+mod1<-ses(icast,alpha = 0.2, initial = "simple",h=8)  
+
+mod2<-ses(icast,alpha = 0.4, initial = "simple",h=8)
+
+mod3<-ses(icast,alpha = 0.6,initial = "simple",h=8)
+
+mod4<-ses(icast,alpha = 0.8,initial = "simple",h=8)
+
+x11()
+plot(mod1,ylab = "PRECIO DE LA ACCION",main = "ICA",type = "o")
+
+lines(mod1$fitted,col="brown", type="o")
+lines(mod2$fitted,col="red", type="o")
+lines(mod3$fitted,col="green", type="o")
+lines(mod4$fitted,col="blue", type="o")
+
+legend("topleft",lty = 1, col = c(1, "brown","red", "green"),c("datos",expression(alpha==0.2),expression(alpha==0.4),expression(alpha==0.6),expression(alpha==0.8)),pch = 1)
+
+#EL MEJOR DE LOS 4 AJUSTES ES CON UN ALPHA DE .8 YA QUE GRAFICAMENTE SE VISUALIZA QUE SE ACERCA MAS A LOS DATOS OBTENIDOS EN LA BASE.
+
+
+ev1<-accuracy(mod1)
+ev2<-accuracy(mod2)
+ev3<-accuracy(mod3)
+ev4<-accuracy(mod4)
+rmse<- c(ev1[,2],ev2[,2],ev3[,2],ev4[,2])
+rmse
+
+mae<- c(ev1[,3],ev2[,3],ev3[,3],ev4[,3])
+mae
+
+mat<-data.frame(rmse,mae)
+
+m<-min(mat[,1])
+if(m==mat[1,1]) { print("El mejor pronostico para RMSE es con un alpha de .2")}
+if(m==mat[2,1]) { print("El mejor pronostico para RMSE es con un alpha de .4")}
+if(m==mat[3,1]) { print("El mejor pronostico para RMSE es con un alpha de .6")}
+if(m==mat[4,1]) { print("El mejor pronostico para RMSE es con un alpha de .8")}
+
+m2<-min(mat[,2])  
+if(m2==mat[1,2]) { print("El mejor pronostico para MAE es con un alpha de .2")}
+if(m2==mat[2,2]) { print("El mejor pronostico para MAE es con un alpha de .4")}
+if(m2==mat[3,2]) { print("El mejor pronostico para MAE es con un alpha de .6")}
+if(m2==mat[4,2]) { print("El mejor pronostico para MAE es con un alpha de .8")}
