@@ -1,0 +1,113 @@
+acciones<-read.csv(file.choose())
+cemex<- ts(acciones[1:252,2], frequency = 252, start = 2016)
+View(bimbo)
+bimbo<- ts(acciones[1:252,3], frequency = 252, start = 2016)
+
+#ver si nuestra serie es estacionaria
+# para eso aplicamos la prueba de raiz unitaria a traves de la funcion 
+# adf.test y esperamos que el p-value sea menos a .05
+plot(cemex)
+
+require(fpp)
+
+adf.test(cemex)
+adf.test(bimbo)
+
+dbimbo<- diff(bimbo) #aplicamos la primera diferenciacion con la funcion diff
+#debido a que la serie original no es estacionaria
+adf.test(dbimbo)
+
+
+#d cuantas diferenciaciones tenemos que hacer para hacer estacionaria EXAMEN
+
+acf(dbimbo) #para encontrar el valor de los promedios moviles se saca un correlograma de la serie de tiempo ya estacionaria
+# q
+#el numero de lineas que sobrepasen los limites son el valor de q (contando la primera)
+
+###para sacar el valor de autorregresivos 
+#para determinar el valor de p que se relaciona con los modelos autorregresivos
+#se utiliza la funcion pacf()
+
+pacf(dbimbo)
+ #el valor de p son las lineas que sobrepasan 
+
+#vamos a proponer a R que nos haga un modelo ARIMA(1,1,2)
+
+modbim<- Arima(bimbo, order = c(1,1,2)) #no utilizas la diferenciada porq arima difrencia la serie original una vez
+modbim
+
+# AICC es el que se compara el que tenga menor valor es un mejor modelo 
+
+modbim1<- Arima(bimbo, order = c(2,1,2))
+modbim1
+ #de este modelo sale mayor AICC 
+
+#de AICC seria el mejor modelo con el criterio de AIKAIKE
+
+#Vamos a aplicar un modelo para saber si los residuales del modelo que elegimos tengan ruido blanco, que cumplen la identidad de independencia
+
+modresidual<-residuals(modbim)
+
+Box.test(modresidual, lag = 12, type = "Ljung-Box") ##p value grande siguiere residuales son ruido blanco
+
+#pronosticamos 12 una vez elegido el modelo
+
+mod1<- forecast(modbim, h=12)
+plot(forecast(modbim, h=12), include = 18) #include te da los ultimos 18 datos de la serie de tiempo
+plot(forecast(modbim, h=12))
+mod1
+summary(mod1)
+#forecast son los valores del pronostico
+
+#auto arima propone los valores de p, q y d
+
+auto.arima(bimbo) #propone un ARIMA(0,1,0)
+modbim2<- Arima(bimbo, order = c(0,1,0))
+modresidual2<-residuals(modbim2)
+Box.test(modresidual2, lag = 25, type = "Ljung-Box") # lag numero de retrazos que toma
+
+mod2<- forecast(modbim2, h=12)
+mod2
+###############-----------------------
+###################### CEMEX
+adf.test(cemex)
+plot(cemex)
+dcemex<- diff(cemex) 
+adf.test(dcemex)
+
+# d = 1
+
+acf(dcemex) 
+# q = 2
+
+pacf(dcemex)
+# p = 2 
+
+#vamos a proponer a R que nos haga un modelo ARIMA(2,1,2)
+
+modcem<- Arima(cemex, order = c(2,1,2)) 
+modcem
+
+#Vamos a aplicar un modelo para saber si los residuales del modelo que elegimos tengan ruido blanco, que cumplen la identidad de independencia
+
+modresidualcemex<-residuals(modcem)
+
+Box.test(modresidualcemex, lag = 12, type = "Ljung-Box") 
+
+mod3<- forecast(modcem, h=12)
+plot(forecast(modcem, h=12), include = 18) #include te da los ultimos 18 datos de la serie de tiempo
+plot(forecast(modcem, h=12))
+mod3
+summary(mod3)
+
+auto.arima(cemex) #propone un ARIMA(0,1,0)
+modcem2<- Arima(cemex, order = c(0,1,0))
+modrescemauto<-residuals(modcem2)
+modcem2
+Box.test(modresidual2, lag = 25, type = "Ljung-Box") # lag numero de retrazos que toma
+
+ #el valor de AICC es mayor con el que propone auto.arima
+mod4<- forecast(modcem2, h=12)
+mod4
+plot(forecast(modcem2, h=12))
+summary(mod4)
