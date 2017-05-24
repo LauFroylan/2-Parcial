@@ -1,0 +1,62 @@
+america<-read.csv(file.choose())
+movil<- ts(america[1:252,2], frequency = 252, start = 2016)
+View(movil)
+require(fpp)
+zz<- arima(movil, order = c(1,0,0))
+zz
+
+#autoregresivos
+#diefernciacion
+#promedios moviles
+
+#ar( de orden uno)
+
+#la constante es el intersecto (intercept)
+
+#yt=13.2381 + .9842(yt-1)+ et ....en este caso fi1= .9842
+
+#si tuvieramos un modelo autorregresivo de orden 2 se expresa como mod
+#arima de a siguiente manera
+
+zz2<- Arima(movil, order = c(2,0,0))
+zz2
+
+
+#En este caso el modelo AR(2) se plantea de la siguiente manera
+#yt= 13.1785 + 1.0582(yt-1) - 0.0759 (yt-2) + et.....en este caso fi1=1.0582
+#fi2= -.0759
+
+#Arima con mayuscula nos da mas criterios y nos siguiere que se use el AICC
+#s.e. Error estandar de cada coeficiente
+
+
+#Ahora bien si tenemos de promedios moviles Ma(q) se puede expresar 
+#yt=c + teta1(et-1) + teta2(et-2)+...+tetap(et-q)+ et
+#atraves de un modelo ARIMA se expresa esta forma como podrias representarla
+
+yy<- Arima(movil, order = c(0,0,1)) #en este caso es un MA(1)
+yy
+
+#que se puede expresar de esta manera
+#yt=c+ teta1(yt-1)+ teta2(yt-2)+ ... + tetap(Yt-p)
+#para el modelo planteado se expresa....
+#yt=12.7277 + .8575(et-1)+ et en ese caso teta1= .8575
+
+#PARA UN MODELO DE PROMEDIOS MOVILES DE ORDEN 2 SE EXPRESA EN U MODELOS ARIMA COMO:
+yy2<- Arima(movil, order = c(0,0,2))
+yy2  #en este caso es un modelo MA(2)
+
+#para el modelo planteado se expresa....
+#yt= 12.7340 + 1.3051(et-1) + .7471 (et-2) + et-q en ese casp 
+#c=12.7340   teta1= 1.3051    teta2= .7471
+
+
+###MODELOS ARIMAS (CON DIFERENCIACION)
+
+#PARA UN MODELO ARIMA CON p=2 d=3 q=2 EXPRESA:
+yy3<- Arima(movil, order = c(2,3,2)
+yy3
+#con este modelo expresamos
+
+y´´´t=.8658(y´´´t-1)-.3397(y´´´t-2)-.8327(et-1)+.1392(et-2)+et
+
