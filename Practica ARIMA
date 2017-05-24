@@ -1,0 +1,11 @@
+base<-read.csv(file.choose())
+martin<- ts(base[1:252,2], frequency = 252, start = 2016)
+View(martin)
+require(fpp)
+zz<- Arima(martin, order = c(4,2,1))
+zz
+
+
+y´´t=.0473(y´´t-1)-.0802(y´´t-2)-.0852(y´´t-3)-.1222(y´´t-4)- 1.0(et-1)+et
+
+
